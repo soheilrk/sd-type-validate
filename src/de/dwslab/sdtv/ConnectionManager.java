@@ -23,8 +23,12 @@ public class ConnectionManager {
 		}
         try {
         	//connection = DriverManager.getConnection("jdbc:mysql://localhost/sdtv", "root", "1234");
-        		connection = DriverManager.getConnection("jdbc:h2:file:/home/soheil/SDTypeH2/sd-type-validate/sdtv", "sa", "");
+        		String path = System.getProperty("user.dir");
+        		System.out.println(path);
+        		connection = DriverManager.getConnection("jdbc:h2:file:path", "sa", "");
 			//connection = DriverManager.getConnection("jdbc:h2:file:///C:/Users/rosha/OneDrive/Documents/db", "sa", "");
+			//connection = DriverManager.getConnection("jdbc:h2:file:path", "sa", "");
+
 		} catch (SQLException e) {
 			System.out.println("Error: could not initialize database");
 		}

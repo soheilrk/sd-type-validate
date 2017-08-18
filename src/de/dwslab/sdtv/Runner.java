@@ -44,9 +44,10 @@ public class Runner {
 			computeBaseStatistics.computeGlobalTypeDistribution();
 			computeBaseStatistics.computePerPredicateDistribution();
 			materializeSDTypes.computeSDTypes();
-			materializeSDTypes.writeTypeFile(args[0]+"./sdtypes.ttl", 0.4f);
+			String path = System.getProperty("user.dir");
+			materializeSDTypes.writeTypeFile(path+"/sdtypes.ttl", 0.4f);
 			materializeSDValidate.computeSDValidateScores();
-			materializeSDValidate.writeWrongStatementsFile(args[0]+"./sdinvalid.ttl", 0.15f);
+			materializeSDValidate.writeWrongStatementsFile(path+"/sdinvalid.ttl", 0.15f);
 			if(1<0)
 				throw new IOException();
 		} catch (IOException e) {
