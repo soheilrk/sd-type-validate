@@ -54,6 +54,8 @@ public class LoadFiles {
 			System.out.println("Error preparing insert");
 			e.printStackTrace();
 		}
+		System.out.print("TRACE BRREADDY:");
+		System.out.println (BR.ready());
 		while(BR.ready()) {
 			boolean insert = false;
 			String sqlInsert = "INSERT INTO dbpedia_properties VALUES(";
@@ -72,7 +74,7 @@ public class LoadFiles {
 			
 			String object = stk.nextToken();
 			if(object.startsWith("<")) {
-				if(object.startsWith("<http://dbpedia.org/resource/")) {
+				if((object.startsWith("<http://dbpedia.org/resource/"))||(object.startsWith("<http://it.dbpedia.org/resource/"))||(object.startsWith("<http://en.dbpedia.org/resource/"))||(object.startsWith("<http://es.dbpedia.org/resource/"))||(object.startsWith("<http://ko.dbpedia.org/resource/"))||(object.startsWith("<http://it.dbpedia.org/resource/"))||(object.startsWith("<http://fr.dbpedia.org/resource/"))||(object.startsWith("<http://de.dbpedia.org/resource/"))) {
 					object = object.replace(" .","");
 					object = object.replace("<","");
 					sqlInsert +="'" + object + "')";
@@ -87,6 +89,7 @@ public class LoadFiles {
 					e.printStackTrace();
 				}
 				count++;
+				System.out.println(count);
 				if(count%chunkSize==0) {
 					try {
 						int[] results = stmt.executeBatch();
@@ -110,7 +113,7 @@ public class LoadFiles {
 			e.printStackTrace();
 		}
 		BR.close();
-		System.out.println("Property assertions: load finished. Loaded " + count + " statements, encountered " + errors + " error(s).");
+		System.out.println("Property assertions: load finished 1. Loaded " + count + " statements, encountered " + errors + " error(s).");
 		Util.checkTable("dbpedia_properties");
 	}
 	
@@ -207,7 +210,7 @@ public class LoadFiles {
 			e.printStackTrace();
 		}
 		BR.close();
-		System.out.println("Type assertions: load finished. Loaded " + count + " statements, encountered " + errors + " error(s).");
+		System.out.println("Type assertions: load finished 2. Loaded " + count + " statements, encountered " + errors + " error(s).");
 		Util.checkTable("dbpedia_types");
 	}
 
@@ -293,7 +296,7 @@ public class LoadFiles {
 			e.printStackTrace();
 		}
 		BR.close();
-		System.out.println("Disambiguations: load finished. Loaded " + count + " resources, encountered " + errors + " error(s).");
+		System.out.println("Disambiguations: load finished 3. Loaded " + count + " resources, encountered " + errors + " error(s).");
 		Util.checkTable("dbpedia_disambiguations");
 	
 	}

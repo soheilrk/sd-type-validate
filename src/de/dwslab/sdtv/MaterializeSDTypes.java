@@ -41,7 +41,19 @@ public class MaterializeSDTypes {
 			e.printStackTrace();
 		}
 		
-		insert = "INSERT INTO dbpedia_untyped_instance SELECT resource FROM stat_resource MINUS (SELECT resource FROM dbpedia_types UNION SELECT resource FROM dbpedia_disambiguations)";
+/*//		insert = "INSERT INTO dbpedia_untyped_instance SELECT resource FROM stat_resource MINUS (SELECT resource FROM dbpedia_types UNION SELECT resource FROM dbpedia_disambiguations)";
+//		try {
+//			stmt.execute(insert);
+//		} catch (SQLException e) {
+//			System.out.println("Error inserting into untyped instance table");
+//			e.printStackTrace();
+//		}
+//		Util.createIndex("dbpedia_untyped_instance", "resource");
+//		Util.checkTable("dbpedia_untyped_instance");
+ * 
+ *in the firstdelect because we will have the error "RESOURCE" is ambiguous we modified it to  stat_resource.RESOURCE
+*/		
+		insert = "INSERT INTO dbpedia_untyped_instance SELECT stat_resource.RESOURCE FROM stat_resource LEFT OUTER JOIN dbpedia_types ON dbpedia_types.resource = stat_resource.resource LEFT OUTER JOIN dbpedia_disambiguations ON dbpedia_disambiguations.resource = stat_resource.resource WHERE dbpedia_types.resource IS NULL AND dbpedia_disambiguations.resource IS NULL";
 		try {
 			stmt.execute(insert);
 		} catch (SQLException e) {
@@ -90,10 +102,17 @@ public class MaterializeSDTypes {
 			e.printStackTrace();
 		}
 		
+		// select distinct type to a arraylist named typeArray
+		
+		// create resultArray the same size as distinct types and set all rows to empty string
+		
+		// int i = 0;
+		
 		String query = "SELECT resource FROM dbpedia_untyped_instance";
 		try {
 			ResultSet RS = stmt.executeQuery(query);
 			while(RS.next()) {
+				//int rsourceId = i++;
 				String resource = RS.getString(1);
 				try {
 					if(testCommonNoun(resource)) {
@@ -101,12 +120,19 @@ public class MaterializeSDTypes {
 					} else {
 						String resourceEscaped = resource;
 						resourceEscaped = resourceEscaped.replace("'", "''");
-						String query2 = "SELECT type,SUM(tf*percentage*weight)/SUM(tf*weight) AS score FROM stat_resource_predicate_type WHERE resource='" + resourceEscaped + "' GROUP BY type HAVING score>=" + threshold;
+						//		String query2 = "SELECT type,SUM(tf*percentage*weight)/SUM(tf*weight) AS score FROM stat_resource_predicate_type WHERE resource='" + resourceEscaped + "' GROUP BY type HAVING score>=" + threshold;
+						String query2 = "SELECT type,SUM(tf*percentage*weight)/SUM(tf*weight) AS score FROM stat_resource_predicate_type WHERE resource='" + resourceEscaped + "' GROUP BY type HAVING score>=" + threshold+ " ORDER BY score DESC";
+
 						Statement stmt2 = conn.createStatement();
 						ResultSet RS2 = stmt2.executeQuery(query2);
-						while(RS2.next()) {
+						//	while(RS2.next()) {
+							if(RS2.next()) {
 							String type = RS2.getString(1);
 							FW.write("<" + resource + "> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + type + ">" + System.lineSeparator());
+							
+							// Find type index in typeArray
+							
+							// resultArray.set(index , (resultArray.get(index) != "" ? resultArray.get(index) + " ":"") + resourceId)
 						}
 						RS2.close();
 					}
@@ -121,6 +147,14 @@ public class MaterializeSDTypes {
 		}
 		
 		FW.close();
+		
+		//for (String result : resultArray)
+		//{
+		//	if (result != "") {
+		//add the result to the instanceIds file
+		//int  index = resultArray.indexof(result);
+		//add typeArray.get(index) to typeFile
+		//}
 		
 	}
 	

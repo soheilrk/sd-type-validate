@@ -23,7 +23,7 @@ public class ComputeBaseStatistics {
 			System.out.println("Error creating global resource count table");
 			e.printStackTrace();
 		}
-		String insertWhole = "INSERT INTO stat_resource SELECT distinct resource FROM (SELECT subject AS resource FROM dbpedia_properties UNION SELECT object AS resource FROM dbpedia_properties)";
+		String insertWhole = "INSERT INTO stat_resource SELECT distinct resource FROM (SELECT subject AS resource FROM dbpedia_properties UNION SELECT object AS resource FROM dbpedia_properties)As stat_resour_alias";
 		try {
 			stmt.execute(insertWhole);
 		} catch (SQLException e) {

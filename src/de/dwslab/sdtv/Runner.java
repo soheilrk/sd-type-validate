@@ -1,30 +1,52 @@
 package de.dwslab.sdtv;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * The main class that runs SDType&Validate
  * @author Heiko
  */
 public class Runner {
-	public static void main(String[] args) {
+	
+		public static void main(String[] args) throws IOException {
+
+	        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	     //   System.out.print("Enter Properties File: ");
+	        if (args.length != 3) System.out.println("Please Enter the Reguired: SDtype.jar mappingbased_properties_path DBPedia_Types_Only_path disambiguationFile_path"); 
+
+	        String propFile = args[0];
+	        //	        String propFile = br.readLine();
+	      //  System.out.print("Enter Type File: ");
+	        String typeFile = args[1];
+	        //	        String typeFile = br.readLine();
+
+	       // System.out.print("Enter Disambiguation File: ");
+	        String disambiguationFile = args[2];
+	        //	        String disambiguationFile = br.readLine();
+
 		LoadFiles loadFiles = new LoadFiles();
 		ComputeBaseStatistics computeBaseStatistics = new ComputeBaseStatistics();
 		MaterializeSDTypes materializeSDTypes = new MaterializeSDTypes();
 		MaterializeSDValidate materializeSDValidate = new MaterializeSDValidate();
 		try {
-			loadFiles.loadProperties("./enwiki-20151002-mappingbased-objects-uncleaned.ttl");
+			//loadFiles.loadProperties("./mappingbased_properties_ittop.ttl");
+			//loadFiles.loadProperties(propFile.replace("\"", ""));
+			loadFiles.loadProperties(propFile);
 			loadFiles.createPropertyIndices();
-			loadFiles.loadTypes("./enwiki-20151002-instance-types-transitive.ttl");
+			//loadFiles.loadTypes("./instance_types_ittop.ttl");
+			loadFiles.loadTypes(typeFile);
 			loadFiles.createTypeIndices();
-			loadFiles.loadDisambiguations("./enwiki-20151002-disambiguations-unredirected.ttl");
+			//loadFiles.loadDisambiguations("./disambiguations_unredirected_ittop.ttl");
+			loadFiles.loadDisambiguations(disambiguationFile);
 			loadFiles.createDisambiguationIndices();
 			computeBaseStatistics.computeGlobalTypeDistribution();
 			computeBaseStatistics.computePerPredicateDistribution();
 			materializeSDTypes.computeSDTypes();
-			materializeSDTypes.writeTypeFile("./sdtypes.ttl", 0.4f);
+			materializeSDTypes.writeTypeFile(args[0]+"./sdtypes.ttl", 0.4f);
 			materializeSDValidate.computeSDValidateScores();
-			materializeSDValidate.writeWrongStatementsFile("./sdinvalid.ttl", 0.15f);
+			materializeSDValidate.writeWrongStatementsFile(args[0]+"./sdinvalid.ttl", 0.15f);
 			if(1<0)
 				throw new IOException();
 		} catch (IOException e) {
